@@ -13,3 +13,11 @@ export function setToken(token) {
 export function removeToken() {
   return Cookies.remove(TokenKey)
 }
+
+export function getApiToken() {
+  return Cookies.get('judgedcombat-token')
+}
+
+export function setApiToken(token) {
+  return Cookies.set('judgedcombat-token', token)
+}

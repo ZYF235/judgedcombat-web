@@ -6,24 +6,23 @@
         <h3 class="title">Login Form</h3>
       </div>
 
+      <el-form-item prop="unitCode">
+        <span class="svg-container">
+          <svg-icon icon-class="tree"/>
+        </span>
+        <el-cascader v-model="unitCode" placeholder="请选择单位" :props="unitProps" :options="unitOptions" :show-all-levels="false" @change="fetchUser"/>
+      </el-form-item>
+
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <svg-icon icon-class="user"/>
         </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
+        <el-cascader v-model="userCode" placeholder="请选择用户" :options="userOptions" :show-all-levels="false"/>
       </el-form-item>
 
       <el-form-item prop="password">
         <span class="svg-container">
-          <svg-icon icon-class="password" />
+          <svg-icon icon-class="password"/>
         </span>
         <el-input
           :key="passwordType"
@@ -37,7 +36,7 @@
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"/>
         </span>
       </el-form-item>
 
@@ -53,7 +52,12 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import {validUsername} from '@/utils/validate'
+import {getUnitTreeVoList} from '@/api/wisUnitInfo'
+import {getUserTreeVoList, login} from '@/api/wisUserInfo'
+import {setApiToken} from '@/utils/auth'
+import {lastItem} from "@/utils";
+
 
 export default {
   name: 'Login',
@@ -78,23 +82,47 @@ export default {
         password: '111111'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [{required: true, trigger: 'blur', validator: validateUsername}],
+        password: [{required: true, trigger: 'blur', validator: validatePassword}]
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      unitCode: '',
+      unitProps: {
+        checkStrictly: true
+      },
+      unitOptions: [],
+      userCode: '',
+      userOptions: []
     }
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler: function (route) {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
     }
   },
+  created() {
+    this.fetchUnit()
+  },
   methods: {
+    fetchUnit() {
+      getUnitTreeVoList({
+        unitCode: ''
+      }).then(resp => {
+        this.unitOptions = resp.data
+      })
+    },
+    fetchUser() {
+      getUserTreeVoList({
+        unitCode: lastItem(this.unitCode)
+      }).then(resp => {
+        this.userOptions = resp.data
+      })
+    },
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -106,19 +134,28 @@ export default {
       })
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
+      login({
+        unitCode: lastItem(this.unitCode),
+        userCode: lastItem(this.userCode),
+        passWord: '123456'
+      }).then(resp => {
+        this.loading = true
+        setApiToken(resp.data.token)
+
+        this.$refs.loginForm.validate(valid => {
+          if (valid) {
+            this.loading = true
+            this.$store.dispatch('user/login', this.loginForm).then(() => {
+              this.$router.push({path: this.redirect || '/'})
+              this.loading = false
+            }).catch(() => {
+              this.loading = false
+            })
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
       })
     }
   }
@@ -129,8 +166,8 @@ export default {
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#283443;
-$light_gray:#fff;
+$bg: #283443;
+$light_gray: #fff;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -143,21 +180,18 @@ $cursor: #fff;
 .login-container {
   .el-input {
     display: inline-block;
-    height: 47px;
-    width: 85%;
 
     input {
       background: transparent;
-      border: 0px;
+      border: 0;
       -webkit-appearance: none;
-      border-radius: 0px;
+      border-radius: 0;
       padding: 12px 5px 12px 15px;
       color: $light_gray;
-      height: 47px;
       caret-color: $cursor;
 
       &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px $bg inset !important;
+        box-shadow: 0 0 0 1000px $bg inset !important;
         -webkit-text-fill-color: $cursor !important;
       }
     }
@@ -168,14 +202,18 @@ $cursor: #fff;
     background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     color: #454545;
+
+    .el-form-item__content {
+      display: flex;
+    }
   }
 }
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 
 .login-container {
   min-height: 100%;
@@ -205,11 +243,8 @@ $light_gray:#eee;
   }
 
   .svg-container {
-    padding: 6px 5px 6px 15px;
+    padding-left: 15px;
     color: $dark_gray;
-    vertical-align: middle;
-    width: 30px;
-    display: inline-block;
   }
 
   .title-container {
@@ -218,7 +253,7 @@ $light_gray:#eee;
     .title {
       font-size: 26px;
       color: $light_gray;
-      margin: 0px auto 40px auto;
+      margin: 0 auto 40px auto;
       text-align: center;
       font-weight: bold;
     }
@@ -227,11 +262,14 @@ $light_gray:#eee;
   .show-pwd {
     position: absolute;
     right: 10px;
-    top: 7px;
     font-size: 16px;
     color: $dark_gray;
     cursor: pointer;
     user-select: none;
+  }
+
+  .el-cascader {
+    flex: 1;
   }
 }
 </style>

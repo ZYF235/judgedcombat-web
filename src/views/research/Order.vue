@@ -11,11 +11,12 @@
         <el-tab-pane label="研判令">
           <OrderList/>
         </el-tab-pane>
-        <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
+        <el-tab-pane label="办结审批">
+          <CloseList/>
+        </el-tab-pane>
         <el-tab-pane label="加入申请">
           <ApplyList/>
         </el-tab-pane>
-        <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>
       </el-tabs>
     </el-main>
   </el-container>
@@ -23,12 +24,13 @@
 
 <script>
 import OrderList from '@/views/research/order/OrderList'
+import CloseList from '@/views/research/order/CloseList'
 import ApplyList from '@/views/research/order/ApplyList'
 
 export default {
   name: 'Order',
   components: {
-    OrderList, ApplyList
+    OrderList, CloseList, ApplyList
   }
 }
 </script>

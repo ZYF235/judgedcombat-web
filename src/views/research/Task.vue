@@ -37,12 +37,12 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="11">
             <el-form-item label="发起时间">
               <el-date-picker v-model="dateTime" type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"/>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5">
             <el-button type="primary" icon="el-icon-search" @click="filterMineTask">查询</el-button>
             <el-button icon="el-icon-refresh-right" @click="filterFormReset()">重置</el-button>
           </el-col>
@@ -194,7 +194,7 @@ export default {
   margin-bottom: 20px;
 }
 
-.el-select, .el-date-picker {
+.el-select, .el-date-editor {
   width: 100%;
 }
 </style>

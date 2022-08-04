@@ -67,10 +67,10 @@ export const constantRoutes = [
         component: () => import('@/views/research/Task')
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: {title: 'Tree', icon: 'tree'}
+        name: 'Order',
+        path: 'order',
+        meta: {title: '研判令', icon: 'tree'},
+        component: () => import('@/views/research/Order')
       }
     ]
   },

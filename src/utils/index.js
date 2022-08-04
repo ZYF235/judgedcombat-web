@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie'
+
 /**
  * Created by PanJiaChen on 16/11/18.
  */
@@ -42,7 +44,7 @@ export function parseTime(time, cFormat) {
     s: date.getSeconds(),
     a: date.getDay()
   }
-  const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
+  return format.replace(/{([ymdhisa])+}/g, (result, key) => {
     const value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
     if (key === 'a') {
@@ -50,7 +52,6 @@ export function parseTime(time, cFormat) {
     }
     return value.toString().padStart(2, '0')
   })
-  return time_str
 }
 
 /**
@@ -111,8 +112,7 @@ export function param2Obj(url) {
     const index = v.indexOf('=')
     if (index !== -1) {
       const name = v.substring(0, index)
-      const val = v.substring(index + 1, v.length)
-      obj[name] = val
+      obj[name] = v.substring(index + 1, v.length)
     }
   })
   return obj
@@ -124,4 +124,20 @@ export function lastItem(list) {
     return length > 0 ? list[length - 1] : undefined
   }
   return undefined
+}
+
+export function getCurrId(key) {
+  const time = parseTime(new Date(), '{y}{m}{d}')
+  const num = Cookies.get(key + time) || '1'
+
+  return time + num.padStart(3, '0')
+}
+
+export function setNextId(key) {
+  const time = parseTime(new Date(), '{y}{m}{d}')
+  const num = Cookies.get(key + time) || '1'
+
+  Cookies.set(key + time, parseInt(num) + 1, {
+    expires: 1
+  })
 }

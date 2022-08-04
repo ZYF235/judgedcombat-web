@@ -106,20 +106,34 @@ export const constantRoutes = [
       }
     ]
   },
-
   {
-    path: '/form',
+    name: 'Network',
+    path: '/network',
     component: Layout,
+    meta: {title: '联勤指挥', icon: 'form'},
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: {title: 'Form', icon: 'form'}
+        name: 'Task',
+        path: 'task',
+        meta: {title: '收网任务', icon: 'table'},
+        component: () => import('@/views/network/Task')
+      },
+      {
+        name: 'createTask',
+        path: 'createTask',
+        meta: {title: '发起收网任务'},
+        component: () => import('@/views/network/Detail'),
+        hidden: true
+      },
+      {
+        name: 'edit',
+        path: 'editTask/:taskCode',
+        meta: {title: '办理收网任务'},
+        component: () => import('@/views/network/Detail'),
+        hidden: true
       }
     ]
   },
-
   {
     path: '/nested',
     component: Layout,

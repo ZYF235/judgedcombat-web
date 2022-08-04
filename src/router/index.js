@@ -71,6 +71,38 @@ export const constantRoutes = [
         path: 'order',
         meta: {title: '研判令', icon: 'tree'},
         component: () => import('@/views/research/Order')
+      },
+      {
+        name: 'createTask',
+        path: 'createTask',
+        meta: {title: '发起研判任务'},
+        props: {taskType: '01'},
+        component: () => import('@/views/research/Detail'),
+        hidden: true
+      },
+      {
+        name: 'edit',
+        path: 'editTask/:taskCode',
+        meta: {title: '办理研判任务'},
+        props: {taskType: '01'},
+        component: () => import('@/views/research/Detail'),
+        hidden: true
+      },
+      {
+        name: 'createOrder',
+        path: 'createOrder',
+        meta: {title: '发起研判令'},
+        props: {taskType: '02'},
+        component: () => import('@/views/research/Detail'),
+        hidden: true
+      },
+      {
+        name: 'edit',
+        path: 'editOrder/:taskCode',
+        meta: {title: '办理研判令'},
+        props: {taskType: '02'},
+        component: () => import('@/views/research/Detail'),
+        hidden: true
       }
     ]
   },

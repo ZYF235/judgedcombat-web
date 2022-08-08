@@ -35,7 +35,7 @@
       </el-card>
     </el-form>
     <el-row style="margin-bottom: 20px">
-      <el-button @click="stepActive=2">上一步</el-button>
+      <el-button @click="stepActive=1">上一步</el-button>
       <el-button v-if="taskStatus=='03'" @click="doSubmitFeedback">提交</el-button>
       <el-button v-if="taskStatus=='03'" @click="doTempSaveFeedback">暂存</el-button>
       <el-button v-if="stepActive<parseInt(taskStatus)" @click="stepActive=4">下一步</el-button>

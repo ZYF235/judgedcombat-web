@@ -54,7 +54,7 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <el-form-item label="收网方案">
-            <el-input v-model="wisNetTask.networkSchemeText" type="textarea"/>
+            <el-input v-model="wisNetTask.networkSchemeText" type="textarea" rows="5"/>
           </el-form-item>
         </el-col>
         <el-col :span="24">

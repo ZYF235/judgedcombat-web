@@ -43,7 +43,18 @@
         </el-row>
       </el-form>
       <el-table v-loading="dataLoading" :data="dataList" border fit highlight-current-row>
-        <el-table-column prop="taskName" label="任务名称"/>
+        <el-table-column prop="taskName" label="任务名称">
+          <template slot-scope="{row}">
+            <el-popover v-model="row.visible" placement="bottom" trigger="hover">
+              <div>
+                <span>青春是一个短暂的美梦, 当你醒来时, 它早已消失无踪</span>
+                <el-divider/>
+                <span>少量的邪恶足以抵消全部高贵的品质, 害得人声名狼藉</span>
+              </div>
+              <span slot="reference">{{ row.taskName }}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column prop="caseCode" label="案件编号"/>
         <el-table-column prop="caseName" label="案件名称"/>
         <el-table-column prop="partUnits" label="参与单位"/>

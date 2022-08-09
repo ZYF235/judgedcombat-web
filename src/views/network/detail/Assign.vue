@@ -51,7 +51,7 @@
         </div>
       </el-dialog>
 
-      <el-table :data="tableData" row-key="id" border default-expand-all>
+      <el-table :data="actionTreeList" row-key="id" border default-expand-all>
         <el-table-column prop="actionType" label="行动类型" width="180">
           <template slot-scope="{row}">
             <span v-if="row.actionType=='01'">抓捕嫌疑人</span>
@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import {getNetActionList, saveNetAction} from '@/api/network/wisNetAction'
+import {getNetAction, saveNetAction} from '@/api/network/wisNetAssign'
 import {getUserTreeVoList} from '@/api/wisUserInfo'
 import {lastItem} from '@/utils'
 import {getUnitTreeVoList} from '@/api/wisUnitInfo'
@@ -121,32 +121,8 @@ export default {
       userOptions1: [],
       userOptions2: [],
       tableRow: undefined,
-      tableData: [{
-        "id": 1660035610323,
-        "taskCode": "S33000020220804001",
-        "actionType": "01",
-        "actionName": "张三",
-        "children": [{
-          "id": 1660035653438,
-          "taskCode": "S33000020220804001",
-          "actionType": "02",
-          "actionName": "啦啦啦",
-          "children": [],
-          "policeList": [{"unitCode": "330300000000", "userCode": "030001", "userName": "毛万燢"}, {"unitCode": "330300000000", "userCode": "030002", "userName": "王茖啣"}],
-          "auxPoliceList": [{"unitCode": "330300000000", "userCode": "030003", "userName": "叶閯騫"}, {"unitCode": "330300000000", "userCode": "030005", "userName": "李佌欶"}]
-        }],
-        "policeList": [{"unitCode": "330100000000", "userCode": "010001", "userName": "罗锚鮩"}, {"unitCode": "330100000000", "userCode": "010002", "userName": "费劗凘"}],
-        "auxPoliceList": [{"unitCode": "330100000000", "userCode": "010003", "userName": "金蝢絑"}, {"unitCode": "330100000000", "userCode": "010005", "userName": "汪渎岼"}]
-      }, {
-        "id": 1660035630754,
-        "taskCode": "S33000020220804001",
-        "actionType": "01",
-        "actionName": "李四",
-        "children": [],
-        "policeList": [{"unitCode": "330200000000", "userCode": "020001", "userName": "王桐鬹"}, {"unitCode": "330200000000", "userCode": "020002", "userName": "项惆侃"}],
-        "auxPoliceList": [{"unitCode": "330200000000", "userCode": "020005", "userName": "张昅厂"}, {"unitCode": "330200000000", "userCode": "020006", "userName": "罗力濲"}]
-      }],
-      treeProps: {}
+      tableTreeProps: {},
+      actionTreeList: []
     }
   },
   computed: {
@@ -170,16 +146,18 @@ export default {
   created() {
     this.taskCode = this.$route.params && this.$route.params.taskCode
     if (this.taskCode) {
-      this.fetchNetActionList()
+      this.fetchNetAction()
       this.fetchUnit()
     }
   },
   methods: {
-    fetchNetActionList() {
-      getNetActionList({
+    fetchNetAction() {
+      getNetAction({
         taskCode: this.taskCode
       }).then(resp => {
-        this.tableData = resp.data
+        const data = resp.data
+
+        this.actionTreeList = data.actionTreeList
       })
     },
     fetchUnit() {
@@ -261,7 +239,7 @@ export default {
       if (this.tableRow) {
         this.tableRow.children.push(obj)
       } else {
-        this.tableData.push(obj)
+        this.actionTreeList.push(obj)
       }
 
       this.dialogFormVisible = false
@@ -270,7 +248,7 @@ export default {
     handleSubmitClick() {
       saveNetAction({
         taskCode: this.taskCode,
-        treeList: this.tableData
+        actionTreeList: this.actionTreeList
       }).then(() => {
         this.$message({
           type: 'success',

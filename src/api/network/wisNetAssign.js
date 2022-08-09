@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function getNetActionList(data) {
+export function getNetAction(data) {
   return request({
-    url: '/wisNetAction/getTreeList',
+    url: '/wisNetAssign/getByTaskCode',
     method: 'get',
     params: data,
     baseURL: '/api'
@@ -11,7 +11,7 @@ export function getNetActionList(data) {
 
 export function saveNetAction(data) {
   return request({
-    url: '/wisNetAction/save',
+    url: '/wisNetAssign/save',
     method: 'post',
     data,
     baseURL: '/api'

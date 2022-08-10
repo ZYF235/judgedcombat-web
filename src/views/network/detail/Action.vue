@@ -3,47 +3,47 @@
     <el-card header="各小组行动进程" shadow="never">
       <el-table v-loading="dataLoading" :data="dataList">
         <el-table-column prop="actionName" label="小组"/>
-        <el-table-column label="任务查收">
+        <el-table-column label="任务查收" align="center">
           <template slot-scope="{row}">
-            <el-button v-if="row.node1" :type="row.node1.isCompleted ? 'success' : 'danger'" plain @click="dialogFormModel=row.node1;dialogFormVisible=true">&nbsp;&nbsp;</el-button>
+            <el-button v-if="row.node1" :type="row.node1t" plain @click="handleNodeDetailClick(row.node1)">&nbsp;&nbsp;</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="前期踩点">
+        <el-table-column label="前期踩点" align="center">
           <template slot-scope="{row}">
-            <el-button v-if="row.node2" :type="row.node2.isCompleted ? 'success' : 'danger'" plain @click="dialogFormModel=row.node2;dialogFormVisible=true">&nbsp;&nbsp;</el-button>
+            <el-button v-if="row.node2" :type="row.node2t" plain @click="handleNodeDetailClick(row.node2)">&nbsp;&nbsp;</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="到达点位">
+        <el-table-column label="到达点位" align="center">
           <template slot-scope="{row}">
-            <el-button v-if="row.node3" :type="row.node3.isCompleted ? 'success' : 'danger'" plain @click="dialogFormModel=row.node3;dialogFormVisible=true">&nbsp;&nbsp;</el-button>
+            <el-button v-if="row.node3" :type="row.node3t" plain @click="handleNodeDetailClick(row.node3)">&nbsp;&nbsp;</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="抓捕结果">
+        <el-table-column label="抓捕结果" align="center">
           <template slot-scope="{row}">
-            <el-button v-if="row.node4" :type="row.node4.isCompleted ? 'success' : 'danger'" plain @click="dialogFormModel=row.node4;dialogFormVisible=true">&nbsp;&nbsp;</el-button>
+            <el-button v-if="row.node4" :type="row.node4t" plain @click="handleNodeDetailClick(row.node4)">&nbsp;&nbsp;</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="现场取证">
+        <el-table-column label="现场取证" align="center">
           <template slot-scope="{row}">
-            <el-button v-if="row.node5" :type="row.node5.isCompleted ? 'success' : 'danger'" plain @click="dialogFormModel=row.node5;dialogFormVisible=true">&nbsp;&nbsp;</el-button>
+            <el-button v-if="row.node5" :type="row.node5t" plain @click="handleNodeDetailClick(row.node5)">&nbsp;&nbsp;</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="到达办案区">
+        <el-table-column label="到达办案区" align="center">
           <template slot-scope="{row}">
-            <el-button v-if="row.node6" :type="row.node6.isCompleted ? 'success' : 'danger'" plain @click="dialogFormModel=row.node6;dialogFormVisible=true">&nbsp;&nbsp;</el-button>
+            <el-button v-if="row.node6" :type="row.node6t" plain @click="handleNodeDetailClick(row.node6)">&nbsp;&nbsp;</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="讯问完毕">
+        <el-table-column label="讯问完毕" align="center">
           <template slot-scope="{row}">
-            <el-button v-if="row.node7" :type="row.node7.isCompleted ? 'success' : 'danger'" plain @click="dialogFormModel=row.node7;dialogFormVisible=true">&nbsp;&nbsp;</el-button>
+            <el-button v-if="row.node7" :type="row.node7t" plain @click="handleNodeDetailClick(row.node7)">&nbsp;&nbsp;</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="采取强制措施">
+        <el-table-column label="采取强制措施" align="center">
           <template slot-scope="{row}">
-            <el-button v-if="row.node8" :type="row.node8.isCompleted ? 'success' : 'danger'" plain @click="dialogFormModel=row.node8;dialogFormVisible=true">&nbsp;&nbsp;</el-button>
+            <el-button v-if="row.node8" :type="row.node8t" plain @click="handleNodeDetailClick(row.node8)">&nbsp;&nbsp;</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" width="60">
+        <el-table-column label="操作" align="center" width="70">
           <template slot-scope="{row}">
             <el-button type="text" @click="dialogFormModel.actionId=row.id; dialogFormVisible=true">添加节点</el-button>
           </template>
@@ -64,6 +64,21 @@
           <el-button type="primary" @click="handleDialogConfirmClick">确 定</el-button>
         </div>
       </el-dialog>
+
+      <el-dialog title="节点详情" :visible.sync="nodeDetailVisible">
+        <el-descriptions :column="1">
+          <el-descriptions-item label="节点名称">{{ nodeDetailModel.nodeName }}</el-descriptions-item>
+          <el-descriptions-item label="是否完成">{{ nodeDetailModel.isCompleted ? '是' : '否' }}</el-descriptions-item>
+          <el-descriptions-item label="节点照片">
+            <el-image fit="cover" src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"/>
+            <el-image fit="cover" src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"/>
+            <el-image fit="cover" src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"/>
+          </el-descriptions-item>
+          <el-descriptions-item label="节点描述">{{ nodeDetailModel.nodeDescribe }}</el-descriptions-item>
+          <el-descriptions-item label="反馈时间">{{ nodeDetailModel.feedbackTime }}</el-descriptions-item>
+        </el-descriptions>
+      </el-dialog>
+
     </el-card>
   </div>
 </template>
@@ -93,7 +108,9 @@ export default {
         actionId: '',
         nodeName: '',
         nodeDescribe: ''
-      }
+      },
+      nodeDetailVisible: false,
+      nodeDetailModel: {}
     }
   },
   computed: {
@@ -143,6 +160,7 @@ export default {
             nodeMap.forEach(node => {
               if (value1.nodeName == node.name) {
                 value[node.value] = value1
+                value[node.value + 't'] = value1.isCompleted ? 'success' : 'danger'
               }
             })
           })
@@ -165,6 +183,10 @@ export default {
         this.handleDialogCancelClick()
         this.fetchActionNodeList()
       })
+    },
+    handleNodeDetailClick(node) {
+      this.nodeDetailModel = node
+      this.nodeDetailVisible = true
     }
   }
 }
@@ -177,5 +199,16 @@ export default {
 
 .el-input, .el-select, .el-cascader {
   width: 100%;
+}
+
+.el-button {
+  width: 100%;
+  vertical-align: middle;
+}
+
+.el-image {
+  width: 100px;
+  height: 100px;
+  margin-right: 10px;
 }
 </style>

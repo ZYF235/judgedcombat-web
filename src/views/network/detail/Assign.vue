@@ -1,22 +1,32 @@
 <template>
   <div>
     <el-card header="人员分配" shadow="never">
-      <el-button type="text" @click="dialogFormVisible = true">添加任务</el-button>
+      <el-row :gutter="20" style="margin-bottom: 20px">
+        <el-col :span="8">
+          <el-cascader v-model="commandUnit" placeholder="请选择指挥单位" :options="unitOptions" :show-all-levels="false" @change="fetchUser"/>
+        </el-col>
+        <el-col :span="8">
+          <el-cascader v-model="commandUser" placeholder="请选择指挥人员" :props="unitProps" :options="userOptions" :show-all-levels="false"/>
+        </el-col>
+        <el-col :span="8" style="text-align: right">
+          <el-button type="text" @click="dialogFormVisible = true">添加任务</el-button>
+        </el-col>
+      </el-row>
 
       <el-dialog title="添加任务" :visible.sync="dialogFormVisible">
         <el-form ref="dialogForm" :model="dialogFormModel" label-width="68px">
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item prop="actionType" label="行动类型">
-                <el-select v-model="dialogFormModel.actionType" placeholder="请选择行动类型">
+              <el-form-item prop="assignType" label="行动类型">
+                <el-select v-model="dialogFormModel.assignType" placeholder="请选择行动类型">
                   <el-option label="抓捕嫌疑人" value="01"/>
                   <el-option label="其他任务" value="02"/>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item prop="actionName" label="行动名称">
-                <el-input v-model="dialogFormModel.actionName" placeholder="请输入行动名称"/>
+              <el-form-item prop="assignName" label="行动名称">
+                <el-input v-model="dialogFormModel.assignName" placeholder="请输入行动名称"/>
               </el-form-item>
             </el-col>
           </el-row>
@@ -52,13 +62,13 @@
       </el-dialog>
 
       <el-table :data="actionTreeList" row-key="id" border default-expand-all>
-        <el-table-column prop="actionType" label="行动类型" width="180">
+        <el-table-column prop="assignType" label="行动类型" width="180">
           <template slot-scope="{row}">
-            <span v-if="row.actionType=='01'">抓捕嫌疑人</span>
-            <span v-else-if="row.actionType=='02'">其他任务</span>
+            <span v-if="row.assignType=='01'">抓捕嫌疑人</span>
+            <span v-else-if="row.assignType=='02'">其他任务</span>
           </template>
         </el-table-column>
-        <el-table-column prop="actionName" label="行动名称" width="180"/>
+        <el-table-column prop="assignName" label="行动名称" width="180"/>
         <el-table-column prop="policeList" label="民警">
           <template slot-scope="{row}">
             <span>{{ row.policeList.map(value => value.userName).join('、') }}</span>
@@ -104,10 +114,14 @@ export default {
   },
   data() {
     return {
+      commandUnit: [],
+      commandUser: [],
+      userOptions: [],
+
       dialogFormVisible: false,
       dialogFormModel: {
-        actionType: '',
-        actionName: '',
+        assignType: '',
+        assignName: '',
         policeUnit: '',
         policeUser: '',
         auxPoliceUnit: '',
@@ -158,6 +172,16 @@ export default {
         const data = resp.data
 
         this.actionTreeList = data.actionTreeList
+
+        const list = data.commandList
+        if (list instanceof Array) {
+          this.commandUnit = list[0].unitCode
+          this.fetchUser()
+
+          this.commandUser = list.map(value => {
+            return [value.unitCode, value.userCode]
+          })
+        }
       })
     },
     fetchUnit() {
@@ -165,6 +189,15 @@ export default {
         unitCode: ''
       }).then(resp => {
         this.unitOptions = resp.data
+      })
+    },
+    fetchUser() {
+      const unit = this.commandUnit
+
+      getUserTreeVoList({
+        unitCode: (unit instanceof Array) ? lastItem(unit) : unit
+      }).then(resp => {
+        this.userOptions = resp.data
       })
     },
     fetchUser1() {
@@ -216,8 +249,8 @@ export default {
       const obj = {
         id: Date.now(),
         taskCode: this.taskCode,
-        actionType: model.actionType,
-        actionName: model.actionName,
+        assignType: model.assignType,
+        assignName: model.assignName,
         children: [],
         policeList: model.policeUser.map(value => {
           return {
@@ -246,8 +279,16 @@ export default {
       this.$refs.dialogForm.resetFields()
     },
     handleSubmitClick() {
+      const commandList = this.commandUser.map(value => {
+        return {
+          unitCode: value[0],
+          userCode: value[1]
+        }
+      })
+
       saveNetAction({
         taskCode: this.taskCode,
+        commandList: commandList,
         actionTreeList: this.actionTreeList
       }).then(() => {
         this.$message({

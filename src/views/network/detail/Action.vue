@@ -201,7 +201,7 @@ export default {
   width: 100%;
 }
 
-.el-button {
+.el-button.is-plain {
   width: 100%;
   vertical-align: middle;
 }

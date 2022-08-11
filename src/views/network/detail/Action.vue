@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import {getActionNodeList, saveActionNode} from '@/api/network/wisNetAssign'
+import {getActionNodeList, saveActionNode} from '@/api/network/wisNetAction'
 
 export default {
   props: {

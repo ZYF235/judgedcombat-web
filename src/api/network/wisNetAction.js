@@ -1,17 +1,17 @@
 import request from '@/utils/request'
 
-export function getNetAction(data) {
+export function getActionPersonList(data) {
   return request({
-    url: '/wisNetAssign/getByTaskCode',
+    url: '/wisNetAction/getPersonList',
     method: 'get',
     params: data,
     baseURL: '/api'
   })
 }
 
-export function saveNetAction(data) {
+export function saveActionPerson(data) {
   return request({
-    url: '/wisNetAssign/save',
+    url: '/wisNetAction/savePerson',
     method: 'post',
     data,
     baseURL: '/api'

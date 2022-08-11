@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import {getNetAction, saveNetAction} from '@/api/network/wisNetAssign'
+import {getActionPersonList, saveActionPerson} from '@/api/network/wisNetAction'
 import {getUserTreeVoList} from '@/api/wisUserInfo'
 import {lastItem} from '@/utils'
 import {getUnitTreeVoList} from '@/api/wisUnitInfo'
@@ -166,7 +166,7 @@ export default {
   },
   methods: {
     fetchNetAction() {
-      getNetAction({
+      getActionPersonList({
         taskCode: this.taskCode
       }).then(resp => {
         const data = resp.data
@@ -286,7 +286,7 @@ export default {
         }
       })
 
-      saveNetAction({
+      saveActionPerson({
         taskCode: this.taskCode,
         commandList: commandList,
         actionTreeList: this.actionTreeList

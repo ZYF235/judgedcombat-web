@@ -54,20 +54,20 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <el-form-item label="收网方案">
-            <el-input v-model="wisNetTask.networkSchemeText" type="textarea" rows="5"/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item label="">
             <el-checkbox v-model="wisNetTask.isUploadScheme">附件上传收网方案</el-checkbox>
           </el-form-item>
         </el-col>
-        <el-col v-show="wisNetTask.isUploadScheme" :span="24">
+        <el-col v-if="wisNetTask.isUploadScheme" :span="24">
           <el-form-item label="">
             <el-upload action="https://jsonplaceholder.typicode.com/posts/" drag multiple>
               <i class="el-icon-upload"/>
               <div class="el-upload__text">拖动上传收网方案，或<em>点击上传</em></div>
             </el-upload>
+          </el-form-item>
+        </el-col>
+        <el-col v-else :span="24">
+          <el-form-item label="">
+            <el-input v-model="wisNetTask.networkSchemeText" type="textarea" rows="5"/>
           </el-form-item>
         </el-col>
       </el-row>

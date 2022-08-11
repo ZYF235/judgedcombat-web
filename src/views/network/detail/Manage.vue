@@ -37,8 +37,7 @@
     <el-row style="margin-bottom: 20px">
       <el-button @click="stepActive=1">上一步</el-button>
       <el-button v-if="taskStatus=='02'">提交</el-button>
-      <el-button v-if="taskStatus=='02'">暂存</el-button>
-      <el-button @click="stepActive=3">下一步</el-button>
+      <el-button v-if="stepActive<parseInt(taskStatus)" @click="stepActive=3">下一步</el-button>
     </el-row>
   </div>
 </template>

@@ -1,12 +1,40 @@
 <template>
   <el-form label-width="100px">
     <el-card header="相关人员信息" shadow="never">
-      <el-row style="margin-bottom: 20px">
-        <el-upload action="" :show-file-list="false" :http-request="doUploadPoliceInfo">
-          <el-button icon="el-icon-upload" plain>上传民警信息</el-button>
-        </el-upload>
+      <el-row>
+        <el-col :span="8" class="text-right">
+          <el-upload action="" class="el-upload-container" :show-file-list="false" :http-request="handleHttpRequest">
+            <el-button type="text" @click="dialogFormVisible = true">导入通讯录</el-button>
+          </el-upload>
+        </el-col>
       </el-row>
-      <el-transfer v-model="selectList" :data="policeList"/>
+      <el-container>
+        <el-aside width="200px">
+          <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="民警" name="first">
+              <ul>
+                <li v-for="i in count" class="infinite-list-item">{{ i }}</li>
+              </ul>
+            </el-tab-pane>
+            <el-tab-pane label="辅警" name="second">
+              <ul>
+                <li v-for="i in count" class="infinite-list-item">{{ i }}</li>
+              </ul>
+            </el-tab-pane>
+          </el-tabs>
+        </el-aside>
+
+        <el-main>
+          <el-table :data="tableData">
+            <el-table-column prop="date" label="日期" width="140">
+            </el-table-column>
+            <el-table-column prop="name" label="姓名" width="120">
+            </el-table-column>
+            <el-table-column prop="address" label="地址">
+            </el-table-column>
+          </el-table>
+        </el-main>
+      </el-container>
     </el-card>
 
     <el-row>
@@ -20,6 +48,7 @@
 
 <script>
 import {getPoliceInfo, submitPerson, tempSavePerson, uploadPoliceInfo} from '@/api/wisResPerson'
+import {importContacts} from '@/api/wisResMission'
 
 export default {
   name: 'Division',
@@ -127,6 +156,18 @@ export default {
         taskCode: this.taskCode,
         personList: personList
       }
+    },
+    handleHttpRequest(data) {
+      const formData = new FormData()
+      formData.set('file', data.file)
+      formData.set('taskCode', this.taskCode)
+
+      importContacts(formData).then(resp => {
+        this.$message({
+          type: 'success',
+          message: resp.message
+        })
+      })
     }
   }
 }
@@ -135,6 +176,14 @@ export default {
 <style lang="scss" scoped>
 .el-form, .el-card {
   margin-bottom: 20px;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.el-upload-container {
+  display: inline-block;
 }
 </style>
 

@@ -113,20 +113,20 @@ export const constantRoutes = [
     meta: {title: '联勤指挥', icon: 'form'},
     children: [
       {
-        name: 'Task',
+        name: 'NetworkTask',
         path: 'task',
         meta: {title: '收网任务', icon: 'table'},
         component: () => import('@/views/network/Task')
       },
       {
-        name: 'createTask',
+        name: 'CreateNetworkTask',
         path: 'createTask',
         meta: {title: '发起收网任务'},
         component: () => import('@/views/network/Detail'),
         hidden: true
       },
       {
-        name: 'edit',
+        name: 'EditNetworkTask',
         path: 'editTask/:taskCode',
         meta: {title: '办理收网任务'},
         component: () => import('@/views/network/Detail'),

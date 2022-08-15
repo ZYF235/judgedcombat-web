@@ -56,8 +56,7 @@ import {validUsername} from '@/utils/validate'
 import {getUnitTreeVoList} from '@/api/wisUnitInfo'
 import {getUserTreeVoList, login} from '@/api/wisUserInfo'
 import {setApiToken} from '@/utils/auth'
-import {lastItem} from "@/utils";
-
+import {lastItem} from '@/utils'
 
 export default {
   name: 'Login',

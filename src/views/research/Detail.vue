@@ -10,11 +10,11 @@
     </el-header>
     <el-main>
       <!--发起任务-->
-      <Initiate v-show="active==1" :active.sync="active" :status.sync="status" :user="user" :task-type="taskType"/>
+      <Initiate v-show="active===1" :active.sync="active" :status.sync="status" :user="user" :task-type="taskType"/>
       <!--任务分工-->
-      <Division v-show="active==2" :active.sync="active" :status.sync="status" :user="user"/>
+      <Division v-show="active===2" :active.sync="active" :status.sync="status" :user="user"/>
       <!--研判反馈-->
-      <Feedback v-show="active==3" :active.sync="active" :status.sync="status" :user="user"/>
+      <Feedback v-show="active===3" :active.sync="active" :status.sync="status" :user="user"/>
       <!--办结审批-->
       <Approval v-show="active>=4" :active.sync="active" :status.sync="status" :user="user"/>
     </el-main>

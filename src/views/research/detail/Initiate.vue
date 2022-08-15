@@ -70,7 +70,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="线索编号">
-            <el-input v-model="clueInfo.clueCode" placeholder="请输入线索编号" :disabled="clueInfo.clueType=='02'" @change="fetchClueInfo"/>
+            <el-input v-model="clueInfo.clueCode" placeholder="请输入线索编号" :disabled="clueInfo.clueType==='02'" @change="fetchClueInfo"/>
           </el-form-item>
         </el-col>
       </el-row>
@@ -135,28 +135,28 @@
           <el-form-item label="涉及地">
             <el-table :data="clueInfo.clueRegions" border fit highlight-current-row>
               <el-table-column label="省" width="200">
-                <template slot-scope="{row}">
+                <template v-slot="{row}">
                   <el-select v-model="row.provinceId" placeholder="请选择省">
-                    <el-option v-for="item in filterDivisionList(null, 0)" :key="item.jlId" :value="item.jlId" :label="item.name"/>
+                    <el-option v-for="item in filterDivisionList(null, '0')" :key="item.jlId" :value="item.jlId" :label="item.name"/>
                   </el-select>
                 </template>
               </el-table-column>
               <el-table-column label="市" width="200">
-                <template slot-scope="{row}">
+                <template v-slot="{row}">
                   <el-select v-model="row.cityId" placeholder="请选择市">
-                    <el-option v-for="item in filterDivisionList(row.provinceId, 1)" :key="item.jlId" :value="item.jlId" :label="item.name"/>
+                    <el-option v-for="item in filterDivisionList(row.provinceId, '1')" :key="item.jlId" :value="item.jlId" :label="item.name"/>
                   </el-select>
                 </template>
               </el-table-column>
               <el-table-column label="区（县）" width="200">
-                <template slot-scope="{row}">
+                <template v-slot="{row}">
                   <el-select v-model="row.districtId" placeholder="请选择区（县）">
-                    <el-option v-for="item in filterDivisionList(row.cityId, 2)" :key="item.jlId" :value="item.jlId" :label="item.name"/>
+                    <el-option v-for="item in filterDivisionList(row.cityId, '2')" :key="item.jlId" :value="item.jlId" :label="item.name"/>
                   </el-select>
                 </template>
               </el-table-column>
               <el-table-column label="附件">
-                <template slot-scope="{row, column, $index}">
+                <template v-slot="{row, column, $index}">
                   <el-link v-for="item in row.fileList" :key="item.name" :href="item.fileUrl" type="primary" target="_blank">{{ item.fileName }}</el-link>
                   <el-upload action="" :show-file-list="false" :http-request="(data)=>handleUploadFile(data,$index)">
                     <el-button icon="el-icon-upload" size="mini" plain>上传</el-button>
@@ -167,7 +167,7 @@
                 <template slot="header">
                   <el-button type="primary" size="mini" icon="el-icon-plus" circle @click="clueInfo.clueRegions.push({})"/>
                 </template>
-                <template slot-scope="{row, column, $index}">
+                <template v-slot="{row, column, $index}">
                   <el-button type="danger" size="mini" icon="el-icon-minus" circle @click="clueInfo.clueRegions.splice($index,1)"/>
                 </template>
               </el-table-column>
@@ -180,14 +180,14 @@
           <el-form-item label="线索要素">
             <el-table :data="clueInfo.clueElements" border fit highlight-current-row>
               <el-table-column label="要素类型" width="200">
-                <template slot-scope="{row}">
+                <template v-slot="{row}">
                   <el-select v-model="row.elementType" placeholder="请选择要素类型">
                     <el-option v-for="item in options.clueElementType" :key="item.dicId" :value="item.dicId" :label="item.name"/>
                   </el-select>
                 </template>
               </el-table-column>
               <el-table-column label="要素说明">
-                <template slot-scope="{row}">
+                <template v-slot="{row}">
                   <el-input v-model="row.elementDescription" placeholder="请输入要素说明"/>
                 </template>
               </el-table-column>
@@ -195,7 +195,7 @@
                 <template slot="header">
                   <el-button type="primary" size="mini" icon="el-icon-plus" circle @click="clueInfo.clueElements.push({})"/>
                 </template>
-                <template slot-scope="{row, column, $index}">
+                <template v-slot="{row, column, $index}">
                   <el-button type="danger" size="mini" icon="el-icon-minus" circle @click="clueInfo.clueElements.splice($index,1)"/>
                 </template>
               </el-table-column>
@@ -213,7 +213,7 @@
 </template>
 
 <script>
-import {parseTime} from '@/utils'
+import {getCurrId, parseTime, setNextId} from '@/utils'
 import {getClueElementType, getClueInfo, getClueSource, getClueSourceDetail, getDivisionList, getInvolveAccusation, getInvolveDomain, uploadClueFile} from '@/api/wisResClue'
 import {getTask, submitTask, tempSaveTask} from '@/api/wisResTask'
 
@@ -241,22 +241,22 @@ export default {
     return {
       taskInfo: {
         taskCode: '',
-        taskName: '测试任务' + parseTime(new Date(), '{h}{i}{s}'),
+        taskName: '测试任务' + getCurrId('wisResTask'),
         taskLevel: 'A',
         launchUnitCode: '',
         launchUnitName: '',
         launchUserCode: '',
         launchUserName: '',
-        launchTime: parseTime(new Date()),
+        launchTime: parseTime(new Date(), undefined),
         deadlineTime: '',
         researchObject: '01'
       },
       clueInfo: {
         clueType: '02',
         clueCode: '',
-        clueName: '测试线索' + parseTime(new Date(), '{h}{i}{s}'),
+        clueName: '测试线索' + getCurrId('wisResClue'),
         clueLevel: '',
-        clueDetail: '测试线索' + parseTime(new Date(), '{h}{i}{s}'),
+        clueDetail: '测试线索' + getCurrId('wisResClue'),
         clueSource: '',
         clueSourceDetail: '',
         involveDomain: '',
@@ -337,7 +337,7 @@ export default {
       })
     },
     fetchClueInfo(data) {
-      if (this.clueInfo.clueType == '01') {
+      if (this.clueInfo.clueType === '01') {
         getClueInfo(data).then(resp => {
           this.clueInfo = resp.data
         })
@@ -369,7 +369,7 @@ export default {
       })
     },
     filterDivisionList(prevId, level) {
-      return this.options.divisionList.filter(item => item.prevId == prevId && item.level == level)
+      return this.options.divisionList.filter(item => item.prevId === prevId && item.level === level)
     },
     fetchClueElementType() {
       getClueElementType().then(resp => {
@@ -407,10 +407,10 @@ export default {
       const clueInfo = this.clueInfo
 
       if (taskInfo.deadlineTime instanceof Date) {
-        taskInfo.deadlineTime = parseTime(taskInfo.deadlineTime)
+        taskInfo.deadlineTime = parseTime(taskInfo.deadlineTime, undefined)
       }
 
-      if (taskInfo.researchObject == '01') {
+      if (taskInfo.researchObject === '01') {
         taskInfo.researchCode = clueInfo.clueCode
       }
 
@@ -422,23 +422,31 @@ export default {
     fnSubmitTask() {
       const formData = this.fetchFormData()
 
-      submitTask(formData).then(() => {
+      submitTask(formData).then((resp) => {
         this.$message({
           type: 'success',
           message: '提交研判令成功'
         })
-        this.stepActive = 2
-        this.taskStatus = '02'
+
+        setNextId('wisResTask')
+        setNextId('wisResClue')
+
+        this.$router.replace('/research/editTask/' + resp.data)
       })
     },
     fnTempSaveTask() {
       const formData = this.fetchFormData()
 
-      tempSaveTask(formData).then(() => {
+      tempSaveTask(formData).then((resp) => {
         this.$message({
           type: 'success',
           message: '暂存研判令成功'
         })
+
+        setNextId('wisResClue')
+        setNextId('wisResTask')
+
+        this.$router.replace('/research/editTask/' + resp.data)
       })
     }
   }

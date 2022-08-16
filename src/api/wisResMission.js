@@ -18,6 +18,15 @@ export function getMemberList(data) {
   })
 }
 
+export function getContacts(data) {
+  return request({
+    baseURL: '/api',
+    url: '/wisResMission/getContacts',
+    method: 'get',
+    params: data
+  })
+}
+
 export function importContacts(data) {
   return request({
     baseURL: '/api',

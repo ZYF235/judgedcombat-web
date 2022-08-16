@@ -2,9 +2,9 @@
   <el-form label-width="100px">
     <el-card header="相关人员信息" shadow="never">
       <el-row>
-        <el-col :span="8" class="text-right">
+        <el-col :span="24" class="text-right">
           <el-upload action="" class="el-upload-container" :show-file-list="false" :http-request="handleHttpRequest">
-            <el-button type="text" @click="dialogFormVisible = true">导入通讯录</el-button>
+            <el-button type="text">导入通讯录</el-button>
           </el-upload>
         </el-col>
       </el-row>
@@ -32,12 +32,28 @@
         </el-aside>
 
         <el-main>
-          <el-table :data="tableData">
-            <el-table-column prop="date" label="日期" width="140">
+          <el-table :data="contacts" row-key="id">
+            <el-table-column prop="assignType" label="任务类型" width="80">
+              <template v-slot="{row}">
+                <span v-if="row.missionType==='01'">抓捕嫌疑人</span>
+                <span v-else-if="row.missionType==='02'">其他任务</span>
+              </template>
             </el-table-column>
-            <el-table-column prop="name" label="姓名" width="120">
+            <el-table-column prop="missionName" label="任务名称" width="180"/>
+            <el-table-column prop="policeList" label="民警">
+              <template v-slot="{row}">
+                <span>{{ row.policeList.map(value => value.memberName).join('、') }}</span>
+              </template>
             </el-table-column>
-            <el-table-column prop="address" label="地址">
+            <el-table-column prop="auxPoliceList" label="民警">
+              <template v-slot="{row}">
+                <span>{{ row.auxPoliceList.map(value => value.memberName).join('、') }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" width="100">
+              <template v-slot="{row}">
+                <el-button type="text" @click="tableRow = row;dialogFormVisible = true">添加下级任务</el-button>
+              </template>
             </el-table-column>
           </el-table>
         </el-main>
@@ -46,16 +62,15 @@
 
     <el-row>
       <el-button @click="stepActive=1">上一步</el-button>
-      <el-button v-if="stepActive==parseInt(taskStatus)" type="primary" >提交</el-button>
-      <el-button v-if="stepActive==parseInt(taskStatus)" @click="doTempSavePerson">暂存</el-button>
+      <el-button v-if="stepActive===parseInt(taskStatus)" type="primary">提交</el-button>
+      <el-button v-if="stepActive===parseInt(taskStatus)">暂存</el-button>
       <el-button v-if="stepActive<parseInt(taskStatus)" @click="stepActive=3">下一步</el-button>
     </el-row>
   </el-form>
 </template>
 
 <script>
-import {tempSavePerson} from '@/api/wisResPerson'
-import {getMemberList, getMissionList, importContacts} from '@/api/wisResMission'
+import {getContacts, getMemberList, getMissionList, importContacts} from '@/api/wisResMission'
 
 export default {
   name: 'Division',
@@ -75,7 +90,8 @@ export default {
       selectList: [],
       policeList: [],
       policeList2: [],
-      missionList: []
+      missionList: [],
+      contacts: []
     }
   },
   computed: {
@@ -102,6 +118,7 @@ export default {
       this.fetchPoliceList()
       this.fetchPoliceList2()
       this.fetchMissionList()
+      this.fetchContacts()
     }
   },
   methods: {
@@ -129,29 +146,12 @@ export default {
         this.missionList = resp.data
       })
     },
-    doTempSavePerson() {
-      const formData = this.getFormData()
-      tempSavePerson(formData).then(resp => {
-        this.$message({
-          type: 'success',
-          message: resp.message
-        })
+    fetchContacts() {
+      getContacts({
+        taskCode: this.taskCode
+      }).then(resp => {
+        this.contacts = resp.data
       })
-    },
-    getFormData() {
-      const personList = this.selectList.map(item => {
-        const split = item.split('-')
-        return {
-          unitCode: split[0],
-          userCode: split[1],
-          personType: '03'
-        }
-      })
-
-      return {
-        taskCode: this.taskCode,
-        personList: personList
-      }
     },
     handleHttpRequest(data) {
       const formData = new FormData()

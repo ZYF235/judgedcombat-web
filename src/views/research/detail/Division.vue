@@ -10,16 +10,23 @@
       </el-row>
       <el-container>
         <el-aside width="200px">
-          <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="民警" name="first">
-              <ul>
-                <li v-for="i in count" class="infinite-list-item">{{ i }}</li>
-              </ul>
+          <el-tabs>
+            <el-tab-pane label="民警">
+              <el-table :data="policeList" height="300">
+                <el-table-column prop="memberName" label="姓名"/>
+              </el-table>
             </el-tab-pane>
-            <el-tab-pane label="辅警" name="second">
-              <ul>
-                <li v-for="i in count" class="infinite-list-item">{{ i }}</li>
-              </ul>
+            <el-tab-pane label="辅警">
+              <el-table :data="policeList2" height="300">
+                <el-table-column prop="memberName" label="姓名"/>
+              </el-table>
+            </el-tab-pane>
+          </el-tabs>
+          <el-tabs>
+            <el-tab-pane label="其他任务">
+              <el-table :data="missionList" height="300">
+                <el-table-column prop="missionName" label="任务名称"/>
+              </el-table>
             </el-tab-pane>
           </el-tabs>
         </el-aside>
@@ -39,7 +46,7 @@
 
     <el-row>
       <el-button @click="stepActive=1">上一步</el-button>
-      <el-button v-if="stepActive==parseInt(taskStatus)" type="primary" @click="doSubmitPerson">提交</el-button>
+      <el-button v-if="stepActive==parseInt(taskStatus)" type="primary" >提交</el-button>
       <el-button v-if="stepActive==parseInt(taskStatus)" @click="doTempSavePerson">暂存</el-button>
       <el-button v-if="stepActive<parseInt(taskStatus)" @click="stepActive=3">下一步</el-button>
     </el-row>
@@ -47,8 +54,8 @@
 </template>
 
 <script>
-import {getPoliceInfo, submitPerson, tempSavePerson, uploadPoliceInfo} from '@/api/wisResPerson'
-import {importContacts} from '@/api/wisResMission'
+import {tempSavePerson} from '@/api/wisResPerson'
+import {getMemberList, getMissionList, importContacts} from '@/api/wisResMission'
 
 export default {
   name: 'Division',
@@ -66,7 +73,9 @@ export default {
     return {
       taskCode: '',
       selectList: [],
-      policeList: []
+      policeList: [],
+      policeList2: [],
+      missionList: []
     }
   },
   computed: {
@@ -87,50 +96,37 @@ export default {
       }
     }
   },
-  watch: {
-    status(val) {
-      if (parseInt(val) >= 2) {
-        this.doGetPoliceInfo()
-      }
-    }
-  },
   created() {
     this.taskCode = this.$route.params && this.$route.params.taskCode
+    if (this.taskCode) {
+      this.fetchPoliceList()
+      this.fetchPoliceList2()
+      this.fetchMissionList()
+    }
   },
   methods: {
-    doGetPoliceInfo() {
-      getPoliceInfo(this.taskCode).then(resp => {
-        this.policeList = resp.data.map(item => {
-          return {
-            key: item.unitCode + '-' + item.userCode,
-            label: item.unitName + '-' + item.userName
-          }
-        })
-        console.log(this.policeList)
+    fetchPoliceList() {
+      getMemberList({
+        taskCode: this.taskCode,
+        memberType: '01'
+      }).then(resp => {
+        this.policeList = resp.data
       })
     },
-    doUploadPoliceInfo(data) {
-      const formData = new FormData()
-      formData.set('file', data.file)
-      formData.set('taskCode', this.taskCode)
-
-      uploadPoliceInfo(formData).then(resp => {
-        this.$message({
-          type: 'success',
-          message: resp.message
-        })
-        this.doGetPoliceInfo()
+    fetchPoliceList2() {
+      getMemberList({
+        taskCode: this.taskCode,
+        memberType: '02'
+      }).then(resp => {
+        this.policeList2 = resp.data
       })
     },
-    doSubmitPerson() {
-      const formData = this.getFormData()
-      submitPerson(formData).then(resp => {
-        this.$message({
-          type: 'success',
-          message: resp.message
-        })
-        this.stepActive = 3
-        this.taskStatus = '03'
+    fetchMissionList() {
+      getMissionList({
+        taskCode: this.taskCode,
+        missionType: '02'
+      }).then(resp => {
+        this.missionList = resp.data
       })
     },
     doTempSavePerson() {
